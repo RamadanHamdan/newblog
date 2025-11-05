@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostDashboardController extends Controller
 {
@@ -12,7 +13,13 @@ class PostDashboardController extends Controller
      */
     public function index()
     {
-        return view('dashboard', ['posts' => Post::all()]);
+        $post = Post::latest()->where('author_id', Auth::user()->id);
+
+        if (request('keyword')) {
+            $post->where('title', 'like', '%' . request('keyword') . '%');
+        }
+
+        return view('dashboard.index', ['posts' => $post->paginate(7)->withQueryString()]);
     }
 
     /**
@@ -20,23 +27,20 @@ class PostDashboardController extends Controller
      */
     public function create()
     {
-        //
+        return view('dashboard.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
-    }
+    public function store(Request $request) {}
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Post $post)
     {
-        //
+        return view('dashboard.show', ['post' => $post]);
     }
 
     /**
