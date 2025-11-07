@@ -13,9 +13,14 @@ class Post extends Model
     protected $fillable = [
         'title',
         'slug',
-        'author',
+        'author_id',
         'body',
+        'category_id',
     ];
+
+    // semua boleh di isi kecuali id
+    // protected $guarded = ['id'];
+
     // Eager load the author and category relationships
     protected $with = ['author', 'category'];
 

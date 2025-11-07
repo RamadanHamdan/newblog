@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PostDashboardController extends Controller
 {
@@ -33,7 +35,35 @@ class PostDashboardController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {}
+    public function store(Request $request)
+    {
+        Validator::make($request->all(), [
+            'title' => 'required|unique:posts|min:4|max:255',
+            'category_id' => 'required',
+            'body' => 'required',
+        ], [
+            'title.required' => 'Field :attribute harus di isi',
+            'title.unique' => 'Judul sudah ada, silahkan ganti dengan judul lain',
+            'title.min' => 'Panjang karakter judul minimal 4 karakter',
+            'title.max' => 'Panjang karakter judul maksimal 255 karakter',
+            'category_id.required' => 'Pilih salah satu kategori',
+            'body.required' => 'Isi :attribute harus di isi',
+        ], [
+            'title' => 'judul',
+            'category_id' => 'kategori',
+            'body' => 'artikel',
+        ])->validate();
+
+        Post::create([
+            'title' => $request->title,
+            'slug' => Str::slug($request->title),
+            'author_id' => Auth::user()->id,
+            'category_id' => $request->category_id,
+            'body' => $request->body,
+        ]);
+
+        return redirect('/dashboard')->with('success', 'New post has been added!');
+    }
 
     /**
      * Display the specified resource.
@@ -46,24 +76,40 @@ class PostDashboardController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Post $post)
     {
-        //
+        return view('dashboard.edit', ['post' => $post]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Post $post)
     {
-        //
+        // Validation 
+        $request->validate([
+            'title' => 'required|min:4|max:255|unique:posts,title' . $post->id,
+            'category_id' => 'required',
+            'body' => 'required'
+        ]);
+        // Update Post
+        $post->update([
+            'title' => $request->title,
+            'slug' => Str::slug($request->title),
+            'author_id' => Auth::user()->id,
+            'category_id' => $request->category_id,
+            'body' => $request->body,
+        ]);
+        // Redirect
+        return redirect('/dashboard')->with('success', 'Your Post has been update');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Post $post)
     {
-        //
+        $post->delete();
+        return redirect('/dashboard')->with('success', 'Your Post has been removed');
     }
 }
