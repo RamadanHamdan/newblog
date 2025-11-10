@@ -40,14 +40,12 @@ class PostDashboardController extends Controller
         Validator::make($request->all(), [
             'title' => 'required|unique:posts|min:4|max:255',
             'category_id' => 'required',
-            'body' => 'required',
+            'body' => 'required|min:20'
         ], [
             'title.required' => 'Field :attribute harus di isi',
-            'title.unique' => 'Judul sudah ada, silahkan ganti dengan judul lain',
-            'title.min' => 'Panjang karakter judul minimal 4 karakter',
-            'title.max' => 'Panjang karakter judul maksimal 255 karakter',
             'category_id.required' => 'Pilih salah satu kategori',
             'body.required' => 'Isi :attribute harus di isi',
+            'body.min' => ':attribute harus :min karakter atau lebih'
         ], [
             'title' => 'judul',
             'category_id' => 'kategori',

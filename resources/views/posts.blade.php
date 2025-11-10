@@ -1,5 +1,5 @@
 <x-layout :title="$title">
-    <div class="py-4 px-4 mx-auto max-w-7xl lg:px-6">
+    <div class="bg-gray-100 justify-center py-4 px-4 mx-auto max-w-7xl lg:px-6">
         <form class="mb-8 max-w-md mx-auto">
             @if (request('category'))
                 <input type="hidden" name="category" value="{{ request('category') }}">
@@ -29,26 +29,25 @@
 
         <div class="mt-4 grid gap-8 lg:grid-cols-3 md:grid-cols-2">
             @forelse ($posts as $post)
-                <article
-                    class="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                <article class="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-white-800">
                     <div class="flex justify-between items-center mb-5 text-gray-600">
                         <a href="/posts?category={{ $post->category->slug }}">
                             <span
-                                class="{{ $post->category->color }} text-primary-500 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
+                                class="{{ $post->category->color }} text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
                                 {{ $post->category->name }}
                             </span>
                         </a>
                         <span class="text-sm">{{ $post->created_at->diffForHumans() }}</span>
                     </div>
-                    <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white hover:underline"><a
+                    <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-black hover:underline"><a
                             href="/posts/{{ $post['slug'] }}">{{ $post['title'] }}</a></h2>
-                    <p class="mb-5 font-light text-gray-500 dark:text-gray-400">{{ Str::limit($post->body, 100) }}</p>
+                    <div class="mb-5 font-light text-gray-500 dark:text-gray-400">{!! Str::limit($post->body, 100) !!}</div>
                     <div class="flex justify-between items-center">
                         <a href="/posts?author={{ $post->author->username }}">
                             <div class="flex items-center space-x-4">
                                 <img class="w-7 h-7 rounded-full"
-                                    src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png"
-                                    alt="{{ $post->author->name }}" />
+                                    src="{{ $post->author->avatar ? asset('storage/' . $post->author->avatar) : asset('img/default.jpg') }}"
+                                    alt="{{ $post->author->name }}">
                                 <span class="font-medium text-xs dark:text-white">
                                     {{ $post->author->name }}
                                 </span>
